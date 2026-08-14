@@ -1,0 +1,62 @@
+[
+  {
+    "subject": "Can't log in - locked out",
+    "body": "I tried logging in a few times and now it says my account is locked. I need to get in today for a client call, please help ASAP.",
+    "customer_id": "cust_1042",
+    "channel": "email"
+  },
+  {
+    "subject": "Charged twice this month",
+    "body": "Hi, I noticed two identical charges on my card this month for the same subscription. Can you look into this? No rush, whenever you get a chance.",
+    "customer_id": "cust_2087",
+    "channel": "form"
+  },
+  {
+    "subject": "PRODUCTION DOWN - all users affected",
+    "body": "Our entire team is getting 500 errors on every page right now. This is a critical emergency, we cannot work at all. Please escalate immediately.",
+    "customer_id": "cust_3311",
+    "channel": "api"
+  },
+  {
+    "subject": "Suspicious login attempt",
+    "body": "I just got an email alert about a login from a country I've never been to. I'm worried my account has been hacked. What should I do?",
+    "customer_id": "cust_4456",
+    "channel": "email"
+  },
+  {
+    "subject": "Feature request: dark mode",
+    "body": "It would be great if you could add a dark mode option, it's pretty bright to use at night. Not urgent at all, just a suggestion.",
+    "customer_id": "cust_5501",
+    "channel": "form"
+  },
+  {
+    "subject": "How do I cancel my plan?",
+    "body": "I'd like to cancel my subscription at the end of this billing cycle. Can you point me to where I do that?",
+    "customer_id": "cust_6023",
+    "channel": "email"
+  },
+  {
+    "subject": "This is unacceptable, terrible experience",
+    "body": "I have been trying to get support for a week and nobody has responded. This is the worst customer service I've ever experienced. I am extremely frustrated and considering leaving.",
+    "customer_id": "cust_7788",
+    "channel": "form"
+  },
+  {
+    "subject": "Quick question about trial",
+    "body": "Just curious, do you offer a free trial before I commit to a paid plan? Wondering how long it lasts.",
+    "customer_id": "cust_8890",
+    "channel": "chat"
+  },
+  {
+    "subject": "Weird bug after last update",
+    "body": "Since the last update, clicking export gives me a blank file instead of my data. It worked fine last week. Steps: open report, click export, file downloads but is 0kb.",
+    "customer_id": "cust_9012",
+    "channel": "email"
+  },
+  {
+    "subject": "asdkjh test 123 ??",
+    "body": "not sure what happened but something is weird with my thing idk",
+    "customer_id": "cust_9999",
+    "channel": "chat"
+  }
+]

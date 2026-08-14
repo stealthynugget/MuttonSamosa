@@ -1,0 +1,20 @@
+[project]
+name = "ticket-triage"
+version = "0.1.0"
+description = "Automated support ticket classification, auto-response, and escalation pipeline."
+requires-python = ">=3.10"
+readme = "README.md"
+
+[project.optional-dependencies]
+llm = ["anthropic>=0.40.0"]
+dev = ["pytest>=7.4.0"]
+
+[project.scripts]
+ticket-triage = "ticket_triage.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["ticket_triage*"]

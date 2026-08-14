@@ -1,0 +1,92 @@
+[
+  {
+    "id": "KB-001",
+    "category": "account_access",
+    "question": "How do I reset my password?",
+    "resolution": "Go to the login page and click 'Forgot password'. Enter the email on your account and we will send a reset link valid for 30 minutes. If the email does not arrive within a few minutes, check your spam folder and confirm the email matches your account exactly."
+  },
+  {
+    "id": "KB-002",
+    "category": "account_access",
+    "question": "I'm locked out of my account after too many failed login attempts.",
+    "resolution": "Accounts lock for 15 minutes after 5 failed login attempts as a security measure. Wait 15 minutes and try again, or use the 'Forgot password' link to reset your credentials immediately, which also clears the lockout."
+  },
+  {
+    "id": "KB-003",
+    "category": "account_access",
+    "question": "How do I set up two-factor authentication (2FA)?",
+    "resolution": "Go to Settings > Security > Two-Factor Authentication and choose either an authenticator app (recommended) or SMS. Scan the QR code with your authenticator app and enter the 6-digit code to confirm. Save the backup codes shown afterward in a safe place."
+  },
+  {
+    "id": "KB-004",
+    "category": "billing",
+    "question": "Why was I charged twice this month?",
+    "resolution": "Duplicate charges usually happen when a card is updated mid-cycle and the old and new card both get billed, or a retry after a temporarily failed payment succeeds later alongside the original. Refunds for confirmed duplicate charges are processed automatically within 5-7 business days; no action is needed once confirmed."
+  },
+  {
+    "id": "KB-005",
+    "category": "billing",
+    "question": "How do I update my billing information or credit card?",
+    "resolution": "Go to Settings > Billing > Payment Methods and click 'Update card'. Changes apply to the next billing cycle immediately; there is no need to cancel and resubscribe."
+  },
+  {
+    "id": "KB-006",
+    "category": "billing",
+    "question": "Can I get a refund for an annual subscription I no longer want?",
+    "resolution": "Annual plans are refundable on a pro-rated basis within the first 14 days of purchase or renewal. After 14 days, the plan remains active through the paid term but auto-renewal can be turned off in Settings > Billing to prevent future charges."
+  },
+  {
+    "id": "KB-007",
+    "category": "technical_issue",
+    "question": "The app is loading very slowly or timing out.",
+    "resolution": "Slow loads are most often caused by browser cache buildup or a large local dataset. Try a hard refresh (Ctrl/Cmd+Shift+R), clear the site cache, and disable browser extensions that intercept network requests (ad blockers, VPN proxies). If the issue persists across devices/networks, it is likely a service-side slowdown; check the status page."
+  },
+  {
+    "id": "KB-008",
+    "category": "technical_issue",
+    "question": "I'm getting a 500 error when I try to save my work.",
+    "resolution": "A 500 on save is typically transient and resolves on retry after 30-60 seconds. If it repeats, note the exact time and the URL/page you were on, and confirm whether the same action fails on a different browser or device, since that helps distinguish a client-side vs server-side cause."
+  },
+  {
+    "id": "KB-009",
+    "category": "bug_report",
+    "question": "A feature works differently than it did last week.",
+    "resolution": "This is usually an intentional change from a recent release, but occasionally a regression. Check the changelog for the relevant date range first. If nothing matches, this needs reproduction steps (exact clicks, expected vs actual result, browser/OS) so engineering can confirm and fix."
+  },
+  {
+    "id": "KB-010",
+    "category": "cancellation",
+    "question": "How do I cancel my subscription?",
+    "resolution": "Go to Settings > Billing > Manage Subscription and click 'Cancel Plan'. You retain access until the end of the current billing period and your data is retained for 30 days after cancellation in case you want to reactivate."
+  },
+  {
+    "id": "KB-011",
+    "category": "cancellation",
+    "question": "How do I permanently delete my account and all my data?",
+    "resolution": "Go to Settings > Account > Delete Account. This is irreversible after a 7-day grace period, during which you can cancel the deletion by logging back in. All personal data is purged after the grace period per our data retention policy."
+  },
+  {
+    "id": "KB-012",
+    "category": "security",
+    "question": "I received a suspicious login alert I don't recognize.",
+    "resolution": "Immediately change your password and review Settings > Security > Active Sessions to revoke any sessions you don't recognize. Enable 2FA if not already active. If you believe your account was accessed without authorization, this should be escalated to the security team rather than auto-resolved."
+  },
+  {
+    "id": "KB-013",
+    "category": "general_inquiry",
+    "question": "Do you offer a free trial?",
+    "resolution": "Yes, all paid plans include a 14-day free trial with full feature access, no credit card required to start. The trial converts to the plan you selected only if you choose to add payment details before it ends."
+  },
+  {
+    "id": "KB-014",
+    "category": "general_inquiry",
+    "question": "What browsers and devices are supported?",
+    "resolution": "The product supports the latest two major versions of Chrome, Firefox, Safari, and Edge on desktop, plus current-generation iOS and Android via the mobile web app. Internet Explorer is not supported."
+  },
+  {
+    "id": "KB-015",
+    "category": "feature_request",
+    "question": "Can you add dark mode / export to CSV / API access?",
+    "resolution": "Feature requests are logged and routed to the product team for roadmap review; they are not something support can implement directly. The requester is added to the interest list for that feature so they're notified if/when it ships."
+  }
+]

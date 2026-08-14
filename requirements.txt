@@ -1,0 +1,10 @@
+# Core pipeline has zero required third-party dependencies (stdlib only:
+# sqlite3, json, re, dataclasses, argparse). The entries below are optional.
+
+# Needed only if you want to use LLMClassifier (higher-quality, context-aware
+# classification via an Anthropic model) instead of the default rule-based
+# classifier. Requires ANTHROPIC_API_KEY to be set.
+anthropic>=0.40.0
+
+# Dev / testing
+pytest>=7.4.0

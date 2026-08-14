@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ticket Triage — Ops Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg: #14171C;
+    --panel: #1B1F26;
+    --panel-hi: #21262F;
+    --border: #2B313B;
+    --text: #E7E9EC;
+    --muted: #8A93A3;
+    --amber: #E8A33D;
+    --coral: #E1575A;
+    --teal: #3FC1B0;
+    --violet: #8B7CF6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; }
+  header{
+    padding:32px 40px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  header h1{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:20px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    margin:0 0 6px;
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+  }
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 40px 60px;
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:28px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+  }
+  .stat .label{
+    color:var(--muted);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:8px;
+  }
+  .stat .value{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:26px;
+    font-weight:600;
+  }
+  .stat.amber .value{ color:var(--amber); }
+  .stat.coral .value{ color:var(--coral); }
+  .stat.teal .value{ color:var(--teal); }
+
+  /* Pipeline signature strip */
+  .pipeline{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    margin-bottom:32px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--panel);
+  }
+  .stage{
+    flex:1;
+    padding:16px 14px;
+    position:relative;
+    border-right:1px solid var(--border);
+  }
+  .stage:last-child{ border-right:none; }
+  .stage .n{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.08em;
+  }
+  .stage .t{
+    font-size:13.5px;
+    font-weight:600;
+    margin:4px 0 2px;
+  }
+  .stage .c{
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+    font-size:18px;
+    color:var(--teal);
+  }
+  .stage.branch-auto .c{ color:var(--amber); }
+  .stage.branch-esc .c{ color:var(--coral); }
+  .stage:not(:last-child)::after{
+    content:"→";
+    position:absolute;
+    right:-11px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    z-index:1;
+    font-size:14px;
+  }
+
+  .panels{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px 20px;
+  }
+  .panel h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--muted);
+    margin:0 0 14px;
+    font-weight:600;
+  }
+  .panel canvas{ max-height:220px; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th{
+    text-align:left;
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  th:hover{ color:var(--text); }
+  td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  td.id{ font-family:'IBM Plex Mono',ui-monospace,monospace; color:var(--muted); white-space:nowrap; }
+  tr:hover td{ background:var(--panel-hi); }
+  .pill{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:600;
+    font-family:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  .pill.auto{ background:rgba(232,163,61,0.15); color:var(--amber); }
+  .pill.esc{ background:rgba(225,87,90,0.15); color:var(--coral); }
+  .urg-low{ color:var(--muted); }
+  .urg-medium{ color:var(--teal); }
+  .urg-high{ color:var(--amber); }
+  .urg-critical{ color:var(--coral); font-weight:600; }
+  .empty{
+    padding:40px;
+    text-align:center;
+    color:var(--muted);
+  }
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  input#search{
+    background:var(--panel-hi);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:13px;
+    width:240px;
+    font-family:'Inter',sans-serif;
+  }
+  input#search:focus{ outline:1px solid var(--teal); }
+  .table-wrap{ overflow-x:auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TICKET TRIAGE — OPS DASHBOARD</h1>
+  <p>Classification, auto-response, and escalation outcomes across incoming support tickets.</p>
+</header>
+
+<main>
+  <div class="stat-row" id="statRow"></div>
+
+  <div class="pipeline" id="pipeline"></div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Tickets by Category</h2>
+      <canvas id="categoryChart"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Tickets by Urgency</h2>
+      <canvas id="urgencyChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <h2 style="margin:0;">Ticket Log</h2>
+      <input id="search" type="text" placeholder="Filter by subject, category, ticket ID…" />
+    </div>
+    <div class="table-wrap">
+      <table id="logTable">
+        <thead>
+          <tr>
+            <th data-key="ticket_id">Ticket</th>
+            <th data-key="subject">Subject</th>
+            <th data-key="category">Category</th>
+            <th data-key="urgency">Urgency</th>
+            <th data-key="confidence">Confidence</th>
+            <th data-key="action">Action</th>
+            <th data-key="assigned_team">Team / Grounding</th>
+            <th data-key="processed_at">Processed</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+      <div class="empty" id="emptyState" style="display:none;">No tickets logged yet. Run the pipeline to populate this dashboard.</div>
+    </div>
+  </div>
+</main>
+
+<script>
+const ROWS = __TRIAGE_DATA__;
+const SUMMARY = __TRIAGE_SUMMARY__;
+
+const CATEGORY_LABELS = {
+  billing:"Billing", technical_issue:"Technical Issue", account_access:"Account Access",
+  bug_report:"Bug Report", feature_request:"Feature Request", cancellation:"Cancellation",
+  complaint:"Complaint", security:"Security", general_inquiry:"General Inquiry", unknown:"Unknown"
+};
+
+function pct(n){ return (n*100).toFixed(0) + "%"; }
+
+function renderStats(){
+  const total = SUMMARY.total || 0;
+  const autoCount = (SUMMARY.by_action && SUMMARY.by_action.auto_responded) || 0;
+  const escCount = (SUMMARY.by_action && SUMMARY.by_action.escalated) || 0;
+  const avgConf = ROWS.length
+    ? ROWS.reduce((s,r)=>s + (r.confidence||0), 0) / ROWS.length
+    : 0;
+
+  const stats = [
+    {label:"Total Tickets", value: total, cls:""},
+    {label:"Auto-Responded", value: autoCount + " (" + pct(SUMMARY.auto_response_rate||0) + ")", cls:"amber"},
+    {label:"Escalated", value: escCount, cls:"coral"},
+    {label:"Avg. Classifier Confidence", value: pct(avgConf), cls:"teal"},
+  ];
+  document.getElementById("statRow").innerHTML = stats.map(s => `
+    <div class="stat ${s.cls}">
+      <div class="label">${s.label}</div>
+      <div class="value">${s.value}</div>
+    </div>
+  `).join("");
+}
+
+function renderPipeline(){
+  const total = SUMMARY.total || 0;
+  const autoCount = (SUMMARY.by_action && SUMMARY.by_action.auto_responded) || 0;
+  const escCount = (SUMMARY.by_action && SUMMARY.by_action.escalated) || 0;
+  const stages = [
+    {n:"01", t:"Ingest", c: total},
+    {n:"02", t:"Classify", c: total},
+    {n:"03", t:"Decide Path", c: total},
+    {n:"04a", t:"Auto-Respond", c: autoCount, cls:"branch-auto"},
+    {n:"04b", t:"Escalate", c: escCount, cls:"branch-esc"},
+    {n:"05", t:"Log & Track", c: total},
+  ];
+  document.getElementById("pipeline").innerHTML = stages.map(s => `
+    <div class="stage ${s.cls||''}">
+      <div class="n">${s.n}</div>
+      <div class="t">${s.t}</div>
+      <div class="c">${s.c}</div>
+    </div>
+  `).join("");
+}
+
+function renderCharts(){
+  const catEntries = Object.entries(SUMMARY.by_category || {});
+  new Chart(document.getElementById("categoryChart"), {
+    type: "bar",
+    data: {
+      labels: catEntries.map(([k]) => CATEGORY_LABELS[k] || k),
+      datasets: [{
+        data: catEntries.map(([,v]) => v),
+        backgroundColor: "#3FC1B0",
+        borderRadius: 4,
+        barThickness: 16,
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { ticks:{color:"#8A93A3"}, grid:{color:"#2B313B"} },
+        y: { ticks:{color:"#E7E9EC", font:{size:11}}, grid:{display:false} },
+      }
+    }
+  });
+
+  const urgOrder = ["low","medium","high","critical"];
+  const urgColors = {low:"#8A93A3", medium:"#3FC1B0", high:"#E8A33D", critical:"#E1575A"};
+  const urgData = urgOrder.map(u => (SUMMARY.by_urgency || {})[u] || 0);
+  new Chart(document.getElementById("urgencyChart"), {
+    type: "bar",
+    data: {
+      labels: urgOrder.map(u => u[0].toUpperCase()+u.slice(1)),
+      datasets: [{
+        data: urgData,
+        backgroundColor: urgOrder.map(u => urgColors[u]),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { ticks:{color:"#8A93A3"}, grid:{display:false} },
+        y: { ticks:{color:"#8A93A3"}, grid:{color:"#2B313B"}, beginAtZero:true },
+      }
+    }
+  });
+}
+
+let sortKey = "processed_at";
+let sortDir = -1;
+
+function renderTable(filterText){
+  const body = document.getElementById("logBody");
+  const empty = document.getElementById("emptyState");
+  let rows = ROWS.slice();
+
+  if (filterText) {
+    const f = filterText.toLowerCase();
+    rows = rows.filter(r =>
+      (r.subject||"").toLowerCase().includes(f) ||
+      (r.category||"").toLowerCase().includes(f) ||
+      (r.ticket_id||"").toLowerCase().includes(f)
+    );
+  }
+
+  rows.sort((a,b) => {
+    const av = a[sortKey], bv = b[sortKey];
+    if (av === bv) return 0;
+    return (av > bv ? 1 : -1) * sortDir;
+  });
+
+  if (!rows.length){
+    body.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  body.innerHTML = rows.map(r => {
+    const actionPill = r.action === "auto_responded"
+      ? `<span class="pill auto">AUTO</span>`
+      : `<span class="pill esc">ESCALATED</span>`;
+    const grounding = r.action === "auto_responded"
+      ? (JSON.parse(r.kb_matches || "[]").map(m => m.kb_id).join(", ") || "—")
+      : (r.assigned_team || "—");
+    return `
+      <tr>
+        <td class="id">${r.ticket_id}</td>
+        <td>${r.subject}</td>
+        <td>${CATEGORY_LABELS[r.category] || r.category}</td>
+        <td class="urg-${r.urgency}">${r.urgency}</td>
+        <td>${pct(r.confidence || 0)}</td>
+        <td>${actionPill}</td>
+        <td>${grounding}</td>
+        <td>${(r.processed_at||"").replace("T"," ").slice(0,19)}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+document.querySelectorAll("#logTable th").forEach(th => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.key;
+    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    renderTable(document.getElementById("search").value);
+  });
+});
+document.getElementById("search").addEventListener("input", (e) => renderTable(e.target.value));
+
+renderStats();
+renderPipeline();
+renderCharts();
+renderTable("");
+</script>
+
+</body>
+</html>
