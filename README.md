@@ -2,6 +2,8 @@
 
 An automated support-ticket triage system: it classifies incoming tickets by **intent and urgency**, drafts **auto-responses** for common, well-understood issues grounded in a knowledge base, and **escalates** complex or high-priority tickets to a human agent with a pre-filled summary. Every outcome is logged for reporting via a built-in dashboard.
 
+**Live dashboard:** https://stealthynugget.github.io/MuttonSamosa/ (built from the sample tickets in `data/sample_tickets.json`)
+
 Built for the workflow:
 
 ```
@@ -56,6 +58,15 @@ pytest
 ```
 
 Open `ticket_triage/dashboard/index.html` in a browser after running any of the above — it's a self-contained file, no server needed. A pre-built example lives at `examples/sample_dashboard.html`.
+
+**To update the live GitHub Pages dashboard** (https://stealthynugget.github.io/MuttonSamosa/), write straight to `docs/index.html` and push:
+
+```bash
+python -m ticket_triage.cli demo --out docs/index.html   # or `ingest`/`dashboard`
+git add docs/index.html && git commit -m "Update dashboard" && git push
+```
+
+GitHub Pages is configured to serve the `main` branch's `/docs` folder, so any push updates the live link within about a minute.
 
 ## Using the library directly
 

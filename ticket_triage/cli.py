@@ -51,7 +51,7 @@ def cmd_demo(args: argparse.Namespace) -> None:
     print("\n--- Summary ---")
     print(json.dumps(summary, indent=2))
 
-    out_path = build_dashboard(pipeline.store)
+    out_path = build_dashboard(pipeline.store, args.out)
     print(f"\nDashboard written to {out_path}")
 
 
@@ -61,13 +61,13 @@ def cmd_ingest(args: argparse.Namespace) -> None:
     results = pipeline.process_batch(tickets)
     for r in results:
         _print_result(r)
-    out_path = build_dashboard(pipeline.store)
+    out_path = build_dashboard(pipeline.store, args.out)
     print(f"\nDashboard written to {out_path}")
 
 
 def cmd_dashboard(args: argparse.Namespace) -> None:
     pipeline = TriagePipeline()
-    out_path = build_dashboard(pipeline.store)
+    out_path = build_dashboard(pipeline.store, args.out)
     print(f"Dashboard written to {out_path}")
 
 
@@ -75,14 +75,22 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ticket_triage", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
+    out_help = (
+        "Where to write the HTML dashboard. Pass 'docs/index.html' to update the "
+        "GitHub Pages site directly (default: ticket_triage/dashboard/index.html)."
+    )
+
     p_demo = sub.add_parser("demo", help="Run the pipeline over the bundled sample tickets")
+    p_demo.add_argument("--out", default=None, help=out_help)
     p_demo.set_defaults(func=cmd_demo)
 
     p_ingest = sub.add_parser("ingest", help="Run the pipeline over a JSON file of tickets")
     p_ingest.add_argument("file", help="Path to a JSON array of ticket objects")
+    p_ingest.add_argument("--out", default=None, help=out_help)
     p_ingest.set_defaults(func=cmd_ingest)
 
     p_dash = sub.add_parser("dashboard", help="Regenerate the HTML dashboard from the log")
+    p_dash.add_argument("--out", default=None, help=out_help)
     p_dash.set_defaults(func=cmd_dashboard)
 
     args = parser.parse_args(argv)
